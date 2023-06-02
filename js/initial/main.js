@@ -17,7 +17,6 @@ const labelMessageError = document.querySelector('.js-label-error');
 const input_search_desc = document.querySelector('.js_in_search_desc');
 
 
-
 //Objetos con cada gatito
 const kittenData_1 = {
     image: "https://dev.adalab.es/gato-siames.webp",
@@ -39,9 +38,6 @@ const kittenData_3 = {
 };
 
 const kittenDataList = [kittenData_1, kittenData_2, kittenData_3];
-
-
-
 
 //Funciones
 function renderKitten(kittenData) {
@@ -85,7 +81,7 @@ function handleClickNewCatForm(event) {
         hideNewCatForm();
     }
 }
-//Adicionar nuevo gatito, integrando la variable "newKittenDataObject" y haciendo push al array de kittenDataList con este nuevo objeto, que se rella al añadir.
+//Adicionar nuevo gatito
 function addNewKitten(event) {
     event.preventDefault();
     const valueDesc = inputDesc.value;
@@ -95,16 +91,7 @@ function addNewKitten(event) {
         labelMessageError.innerHTML = "¡Uy! parece que has olvidado algo";
     }
     else if (valueDesc !== "" && valuePhoto !== "" && valueName !== "") {
-        const newKittenDataObject = {
-        image: `${inputPhoto.value}`,
-        name: `${inputName.value}`,
-        desc:`${inputDesc.value}`,
-        race: `${inputRace.value}`,
-        };
-        kittenDataList.push(newKittenDataObject);
-        console.log(kittenDataList);
-        renderKittenList(kittenDataList);
-        labelMessageError.innerHTML = "Mola! Un nuevo gatito en Adalab!";
+        labelMessageError.innerHTML = "";
     }
 }
 //Cancelar la búsqueda de un gatito
@@ -128,7 +115,7 @@ function filterKitten(event) {
     }
 }
 
-//Mostrar el listado de gatitos en el HTML
+//Mostrar el litado de gatitos en ell HTML
 renderKittenList(kittenDataList);
 
 //Eventos
