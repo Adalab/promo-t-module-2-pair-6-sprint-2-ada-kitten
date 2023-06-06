@@ -17,8 +17,13 @@ const labelMessageError = document.querySelector('.js-label-error');
 const input_search_desc = document.querySelector('.js_in_search_desc');
 const input_search_race = document.querySelector('.js_in_search_race');
 
+// variables para peticiones al servidor:
+const GITHUB_USER = '<silviaparadag>';
+const SERVER_URL = `https://dev.adalab.es/api/kittens/${GITHUB_USER}`;
 
-//Objetos con cada gatito
+
+//Objetos con cada gatito, antes de hacet peticiones al servidor:
+/*
 const kittenData_1 = {
     image: "https://dev.adalab.es/gato-siames.webp",
     name: "Anastacio",
@@ -37,11 +42,19 @@ const kittenData_3 = {
     desc: " Tienen la cabeza cuadrada y los ojos simétricos, por lo que su bella mirada se ha convertido en una de sus señas de identidad. Sus ojos son grandes y las orejas resultan largas y en punta.",
     race: "Maine Coon",
 };
+*/
 
-const kittenDataList = [kittenData_1, kittenData_2, kittenData_3];
+/*
+const kittenDataList = [kittenData_1, kittenData_2, kittenData_3];*/
 
+let kittenDataList = [ ];
 
-
+fetch(SERVER_URL)
+    .then(response => response.json())
+    .then((data) => {
+    kittenDataList = data.results;
+    renderKittenList(kittenDataList);
+})
 
 //Funciones
 function renderKitten(kittenData) {
@@ -61,6 +74,7 @@ function renderKitten(kittenData) {
     </li>`;
     return kitten;
 }
+
 
 function renderKittenList(kittenDataList) {
     listElement.innerHTML = "";
@@ -135,6 +149,7 @@ linkNewFormElememt.addEventListener("click", handleClickNewCatForm);
 searchButton.addEventListener("click", filterKitten);
 buttonAdd.addEventListener("click", addNewKitten);
 buttonCancelForm.addEventListener("click", cancelNewKitten);
+
 
 
 
