@@ -1,6 +1,5 @@
 'use strict';
 
-
 /* Elementos que usamos en el HTML */
 const newFormElement = document.querySelector('.js-new-form');
 const listElement = document.querySelector('.js-list');
@@ -17,10 +16,11 @@ const labelMessageError = document.querySelector('.js-label-error');
 const input_search_desc = document.querySelector('.js_in_search_desc');
 const input_search_race = document.querySelector('.js_in_search_race');
 
+const kittenListStored = JSON.parse(localStorage.getItem('kittensList'));
+
 // variables para peticiones al servidor:
 const GITHUB_USER = '<silviaparadag>';
 const SERVER_URL = `https://dev.adalab.es/api/kittens/${GITHUB_USER}`;
-
 
 //Objetos con cada gatito, antes de hacet peticiones al servidor:
 /*
@@ -47,18 +47,39 @@ const kittenData_3 = {
 /*
 const kittenDataList = [kittenData_1, kittenData_2, kittenData_3];*/
 
-let kittenDataList = [ ];
+let kittenDataList = [];
 
-fetch(SERVER_URL)
-    .then(response => response.json())
-    .then((data) => {
-    kittenDataList = data.results;
-    renderKittenList(kittenDataList);
-})
+if (kittenListStored !== null) {
+  kittenDataList = data.results;
+  renderKittenList(kittenDataList);
+  //si existe el listado de gatitos en el local storage
+  // vuelve a pintar el listado de gatitos
+  //...
+  //completa el código...
+} else {
+  //sino existe el listado de gatitos en el local storage
+  //haz la petición al servidor
+  fetch(SERVER_URL)
+    .then((response) => response.json())
+    .then(
+      (data) => {
+        kittenDataList = data.results;
+        renderKittenList(kittenDataList);
+        localStorage.setItem('kittensList', JSON.stringify(kittenDataList));
+      }
+      //guarda el listado obtenido en el local storage.
+      //vuelve a pintar el listado de gatitos
+      //completa el código...
+    )
+
+    .catch((error) => {
+      console.error(error);
+    });
+}
 
 //Funciones
 function renderKitten(kittenData) {
-    const kitten = `<li class="card">
+  const kitten = `<li class="card">
     <article>
       <img
         class="card_img"
@@ -72,87 +93,88 @@ function renderKitten(kittenData) {
       </p>
     </article>
     </li>`;
-    return kitten;
+  return kitten;
 }
 
-
 function renderKittenList(kittenDataList) {
-    listElement.innerHTML = "";
-    for (const kittenItem of kittenDataList) {
-        listElement.innerHTML += renderKitten(kittenItem);
-    }
+  listElement.innerHTML = '';
+  for (const kittenItem of kittenDataList) {
+    listElement.innerHTML += renderKitten(kittenItem);
+  }
 }
 
 //Mostrar/ocultar el formulario
 function showNewCatForm() {
-    newFormElement.classList.remove('collapsed');
+  newFormElement.classList.remove('collapsed');
 }
 function hideNewCatForm() {
-    newFormElement.classList.add('collapsed');
+  newFormElement.classList.add('collapsed');
 }
 
 function handleClickNewCatForm(event) {
-    event.preventDefault();
-    if (newFormElement.classList.contains('collapsed')) {
-        showNewCatForm();
-    } else {
-        hideNewCatForm();
-    }
+  event.preventDefault();
+  if (newFormElement.classList.contains('collapsed')) {
+    showNewCatForm();
+  } else {
+    hideNewCatForm();
+  }
 }
 //Adicionar nuevo gatito, integrando la variable "newKittenDataObject" y haciendo push al array de kittenDataList con este nuevo objeto, que se rella al añadir.
+/*METODO POST
 function addNewKitten(event) {
-    event.preventDefault();
-    const valueDesc = inputDesc.value;
-    const valuePhoto = inputPhoto.value;
-    const valueName = inputName.value;
-    if (valueDesc === "" || valuePhoto === "" || valueName === "") {
-        labelMessageError.innerHTML = "¡Uy! parece que has olvidado algo";
-    }
-    else if (valueDesc !== "" && valuePhoto !== "" && valueName !== "") {
-        const newKittenDataObject = {
-        image: `${inputPhoto.value}`,
-        name: `${inputName.value}`,
-        desc:`${inputDesc.value}`,
-        race: `${inputRace.value}`,
-        };
+  event.preventDefault();
+  const valueDesc = inputDesc.value;
+  const valuePhoto = inputPhoto.value;
+  const valueName = inputName.value;
+  if (valueDesc === '' || valuePhoto === '' || valueName === '') {
+    labelMessageError.innerHTML = '¡Uy! parece que has olvidado algo';
+  } else if (valueDesc !== '' && valuePhoto !== '' && valueName !== '') {
+    const newKittenDataObject = {
+      image: `${inputPhoto.value}`,
+      name: `${inputName.value}`,
+      desc: `${inputDesc.value}`,
+      race: `${inputRace.value}`,
+    };
+
+    fetch(`https://dev.adalab.es/api/kittens/${GITHUB_USER}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newKittenDataObject),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        kittenDataList = data.results;
         kittenDataList.push(newKittenDataObject);
         console.log(kittenDataList);
         renderKittenList(kittenDataList);
-        labelMessageError.innerHTML = "Mola! Un nuevo gatito en Adalab!";
-    }
-}
+        localStorage.setItem('kittensList', JSON.stringify(kittenDataList));
+        labelMessageError.innerHTML = 'Mola! Un nuevo gatito en Adalab!';
+      });
+  }
+}*/
 //Cancelar la búsqueda de un gatito
 function cancelNewKitten(event) {
-    event.preventDefault();
-    newFormElement.classList.add("collapsed");
-    inputDesc.value = "";
-    inputPhoto.value = "";
-    inputName.value = "";
+  event.preventDefault();
+  newFormElement.classList.add('collapsed');
+  inputDesc.value = '';
+  inputPhoto.value = '';
+  inputName.value = '';
 }
 
 //Filtrar por descripción
 function filterKitten(event) {
-    event.preventDefault();
-    const descrSearchText = kittenDataList
-    .filter((objDesc) =>  objDesc.desc.includes(input_search_desc.value) )
-    .filter((objRace) =>  objRace.race.includes(input_search_race.value) );
-    renderKittenList(descrSearchText);
-    
- 
+  event.preventDefault();
+  const descrSearchText = kittenDataList
+    .filter((objDesc) => objDesc.desc.includes(input_search_desc.value))
+    .filter((objRace) => objRace.race.includes(input_search_race.value));
+  renderKittenList(descrSearchText);
 }
 
 //Mostrar el listado de gatitos en el HTML
 renderKittenList(kittenDataList);
 
 //Eventos
-linkNewFormElememt.addEventListener("click", handleClickNewCatForm);
-searchButton.addEventListener("click", filterKitten);
-buttonAdd.addEventListener("click", addNewKitten);
-buttonCancelForm.addEventListener("click", cancelNewKitten);
-
-
-
-
-
-
-
+linkNewFormElememt.addEventListener('click', handleClickNewCatForm);
+searchButton.addEventListener('click', filterKitten);
+buttonAdd.addEventListener('click', addNewKitten);
+buttonCancelForm.addEventListener('click', cancelNewKitten);
